@@ -1,67 +1,39 @@
-// this is what you would do if you liked things to be easy:
-// var stringifyJSON = JSON.stringify;
-
-// but you don't so you're going to write it from scratch:
-//output = {"name":"john","age":24,"city":"boca raton","arr":[1,2,3]}
-/*console.log("BEGIN");
-
-var me = {
-  name: "Boya",
-  age: 30,
-  alive: true,
-  talk: function(){console.log('hi');}
-}
-*/
-
-
 var stringifyJSON = function(obj) {
-	var funcOrUndef =  function(test) { 
-		return ((typeof test === "function") || (typeof test === "undefined"));
+	if ((typeof obj === 'number' && !isNaN(obj))
+		|| typeof obj === 'boolean'
+		)
+	{
+		return obj.toString();
+	};
+	if (obj === undefined || obj === null){
+		return "null";
 	}
-	if (!funcOrUndef(obj)){
-		 if (typeof obj === "object" && obj !== null) {
-		 	if (Array.isArray(obj) === false){												//stringify objects
-		 		var empty = true;
-				var str = '{';
-			  for (var prop in obj) {
-					if (!funcOrUndef(obj[prop])){
-				  	var empty = false;
-			 	 		str = str + '"' + prop + '":' + stringifyJSON(obj[prop]) + ',';	  
-			  	}
-				}
-			if (empty){
-					return "{}";
-				}
-				else
-					return str.slice(0, str.length-1) + '}'; 
-			}
-			else {      																							//stringify arrays
-				var str = "[";
-				var empty = true;
-					for (var i = 0; i < obj.length; i++){
-						empty = false;
-						if (!funcOrUndef(obj[i])){
-							str = str+stringifyJSON(obj[i])+",";
-						}
-						else
-							str += "null,";
-					}
-				if (!empty){
-					return str.slice(0, str.length-1) + ']'; 
-				}
-				else
-					return str+']';
-			}
-		}
-		else if (obj ===null) {
-			return "null";
-		}
-		else {
-					switch (typeof obj){ 
-				case "string": return '"' + obj +'"';	
-				default: return obj.toString();
-					}
-		}
+	if (typeof obj === "string"){
+		return '"' + obj + '"';
 	}
-}
-//console.log(stringifyJSON(me));
+	if (Array.isArray(obj)) {
+		var arrStr = '[';
+		for (var i = 0; i < obj.length; i++) {
+			arrStr += stringifyJSON(obj[i]);
+			arrStr += i < obj.length-1 ? ',' : '';
+		}
+		return arrStr+']';
+	}
+	if (typeof obj === 'object') {
+		var objStr = '{';
+		var empty = true;
+		for (var i in obj) {
+			if (typeof obj[i] != 'function' 
+				&& typeof obj[i] != 'undefined')  {
+				empty = false;
+				objStr = objStr + '"' + i.toString() +'":' + stringifyJSON(obj[i]) + ',';
+			};
+		}
+		if (!empty){
+			return objStr.slice(0,objStr.length-1) + '}';
+		} else{
+
+			return '{}';
+		}
+	}	
+};
